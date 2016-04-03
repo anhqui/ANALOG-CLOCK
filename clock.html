@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<body>
+   
+<style>
+  #canvas, #canvasText{
+    border: 5px solid #333;
+    background: linear-gradient(to bottom right, red,orange,yellow,green,blue,indigo,violet); /*rainbow effect*/
+    margin: 0px 500px;
+    box-shadow: 0px 0px 30px gray;
+  }
+
+.button {
+  position: absolute;
+  left: 25px;
+  top: 65px;
+  display: inline-block; 
+  padding: 15px 25px;
+  font-size: 24px;
+  cursor: pointer;
+  text-align: center; 
+  text-decoration: none;
+  outline: none;
+  color: #fff;
+  background-color: #4CAF50;
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 9px #999;
+}
+
+.button:hover {background-color: #3e8e41}
+
+.button:active {
+  background-color: #3e8e41;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
+
+</style>
+<audio id="second" autoplay loop controls style="height:30px; width:240px; margin: 20px;">
+<source src='second.mp3'>
+</audio>
+<audio id="one" style="height:30px; width:240px; margin: 20px;">
+<source src='one.mp3'>
+</audio>
+<audio id="two" style="height:30px; width:240px; margin: 20px;">
+<source src='two.mp3'>
+</audio>
+<audio id="three" style="height:30px; width:240px; margin: 20px;">
+<source src='three.mp3'>
+</audio>
+<audio id="four" style="height:30px; width:240px; margin: 20px;">
+<source src='four.mp3'>
+</audio>
+<audio id="five" style="height:30px; width:240px; margin: 20px;">
+<source src='five.mp3'>
+</audio>
+<audio id="six" style="height:30px; width:240px; margin: 20px;">
+<source src='six.mp3'>
+</audio>
+<audio id="seven" style="height:30px; width:240px; margin: 20px;">
+<source src='seven.mp3'>
+</audio>
+<audio id="eigth" style="height:30px; width:240px; margin: 20px;">
+<source src='eigth.mp3'>
+</audio>
+<audio id="nine" style="height:30px; width:240px; margin: 20px;">
+<source src='nine.mp3'>
+</audio>
+<audio id="ten" style="height:30px; width:240px; margin: 20px;">
+<source src='ten.mp3'>
+</audio>
+<audio id="eleven" style="height:30px; width:240px; margin: 20px;">
+<source src='eleven.mp3'>
+</audio>
+<audio id="twelve" style="height:30px; width:240px; margin: 20px;">
+<source src='twelve.mp3'>
+</audio>
+
+<button class="button" id="btn" onclick="hideAudioCtrl()"> Hide audio control</button>
+<div>
+<canvas id="canvasText" width="400" height="50"> </canvas>
+<canvas id="canvas" width="400" height="400"> </canvas>
+</div>
+<script>
+
+/* 
+ * Hide Audio Control Bar
+ */
+function hideAudioCtrl(){
+document.getElementsByTagName("audio")[0].removeAttribute("controls");
+document.getElementById("btn").style.display="none";
+}
+
+/* 
+ * Display Text on the canvas
+ */
+var canvasText = document.getElementById("canvasText");
+var ctxText = canvasText.getContext("2d");
+ctxText.font         = 'bold 30px Times'
+ctxText.textBaseline = 'middle'
+metrics = ctxText.measureText('Analog clock')
+widthText = metrics.width 
+ctxText.fillText(  'Analog clock', 200 - widthText/2 , 25)
+ctxText.strokeText('Analog clock', 200 - widthText/2, 25)
+
+/* 
+ * Building the analog clock
+ */
+// Create a canvas object (var canvas) from the HTML canvas element.
+var canvas = document.getElementById("canvas");
+// Create a 2d drawing object (var ctx) for the canvas object
+var ctx = canvas.getContext("2d"); 
+// Calculate the clock radius, using the height of the canvas
+var radius = canvas.height / 2;
+// Remap the (0,0) position (of the drawing object) to the center of the canvas
+ctx.translate(radius, radius); 
+// Reduce the clock radius (to 90%) to draw the clock well inside the canvas
+radius = radius * 0.90 
+// Invoke drawClock function each second.
+setInterval(drawClock, 1000); 
+
+// Invoke three following functions.
+function drawClock() {
+  drawFace(ctx, radius); 
+  drawNumbers(ctx, radius);
+  drawTime(ctx, radius);
+}
+
+function drawFace(ctx, radius) {
+  var grad;
+// Draw the white circle
+  ctx.beginPath();
+  ctx.arc(0, 0, radius, 0, 2*Math.PI);
+  ctx.fillStyle = 'white';
+  ctx.fill();
+// Create a radial gradient (95% and 105% of original clock radius)
+  grad = ctx.createRadialGradient(0,0,radius*0.95, 0,0,radius*1.05);
+// Create 3 color stops, corresponding with the inner, middle, and outer edge of the arc
+  grad.addColorStop(0, '#333');
+  grad.addColorStop(0.5, 'white');
+  grad.addColorStop(1, '#333');
+// Define the gradient as the stroke style of the drawing object
+  ctx.strokeStyle = grad;
+// Define the line width of the drawing object (10% of radius)
+  ctx.lineWidth = radius*0.1;
+// Draw the circle
+  ctx.stroke();
+// Draw the clock center
+  ctx.beginPath();
+  ctx.arc(0, 0, radius*0.1, 0, 2*Math.PI);
+  ctx.fillStyle = '#333';
+  ctx.fill();
+}
+
+function drawNumbers(ctx, radius) {
+  var ang;
+  var num;
+// Set the font size (of the drawing object) to 15% of the radius
+  ctx.font = radius*0.15 + "px arial";
+// Set the text alignment to the middle and the center of the print position
+  ctx.textBaseline="middle";
+  ctx.textAlign="center";
+// Calculate the print position (for 12 numbers) to 85% of the radius, rotated (PI/6) for each number
+  for(num = 1; num < 13; num++){
+    ang = num * Math.PI / 6;
+    ctx.rotate(ang); 
+    ctx.translate(0, -radius*Math.cos(Math.PI/6)); 
+    ctx.rotate(-ang); 
+    ctx.fillText(num.toString(), 0, 0); 
+    ctx.rotate(ang); 
+    ctx.translate(0, radius*Math.cos(Math.PI/6)); 
+    ctx.rotate(-ang); 
+  }
+}
+
+function drawTime(ctx, radius){
+// Use Date to get hour, minute, second
+    var now = new Date();
+    var hour = now.getHours();
+    var minute = now.getMinutes();
+    var second = now.getSeconds();
+/* Calculate the angle of the hour hand, and draw it a length (50% of radius), and a width (7% of radius)*/
+    //hour
+    hour=hour%12;
+    hour=(hour*Math.PI/6)+
+    (minute*Math.PI/(6*60))+
+    (second*Math.PI/(360*60));
+    drawHand(ctx, hour, radius*0.5, radius*0.07); // invoking drawHand() function
+    //minute
+    minute=(minute*Math.PI/30)+(second*Math.PI/(30*60));
+    drawHand(ctx, minute, radius*0.8, radius*0.07);
+    // second
+    second=(second*Math.PI/30);
+    drawHand(ctx, second, radius*0.9, radius*0.02); 
+}
+// The drawHand() routine does not need an explanation. It just draws a line with a given length and width.
+function drawHand(ctx, pos, length, width) {
+    ctx.beginPath();
+    ctx.lineWidth = width;
+    ctx.lineCap = "round";
+    ctx.moveTo(0,0);
+    ctx.rotate(pos);
+    ctx.lineTo(0, -length);
+    ctx.stroke();
+    ctx.rotate(-pos);
+}
+/*
+ * Play different songs for time at 1,2,3..12 o'clock 
+ */
+    setInterval(function()
+  {
+    var now = new Date();
+    var hour = now.getHours();
+    var minute = now.getMinutes();
+    var second = now.getSeconds();
+
+   if(second==0 && minute==0){
+   switch(hour){
+     case 1:
+     case 13:
+        document.getElementById("one").play();
+        break;
+     case 2:
+     case 14:
+        document.getElementById("two").play();
+        break;
+     case 3:
+     case 15:
+        document.getElementById("three").play();
+        break;
+     case 4:
+     case 16:
+        document.getElementById("four").play();
+        break;
+     case 5:
+     case 17:
+        document.getElementById("five").play();
+        break;
+     case 6:
+     case 18:
+        document.getElementById("six").play();
+        break;
+     case 7:
+     case 19:
+        document.getElementById("seven").play();
+        break;
+     case 8:
+     case 20:
+        document.getElementById("eight").play();
+        break;
+     case 9:
+     case 21:
+        document.getElementById("nine").play();
+        break;
+     case 10:
+     case 22:
+        document.getElementById("ten").play();
+        break;
+     case 11:
+     case 23:
+        document.getElementById("eleven").play();
+        break;
+     case 12:
+     case 0:
+        document.getElementById("twelve").play();
+        break;
+   }
+   }
+}, 1000)
+
+</script>
+
+</body>
+</html>
